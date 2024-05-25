@@ -4,8 +4,11 @@
 
 using namespace std;
 
-// Array to store values
-uint32_t storedValues[1000];
+// Number of linked lists
+static const int numberOfLinkedLists = 100;
+
+// Linked list to store hashes
+linkedList storedValues[numberOfLinkedLists];
 
 // djb2 (Daniel J. Bernstein)
 uint32_t djb2(const std::string& str) {
@@ -24,7 +27,7 @@ uint32_t djb2(const std::string& str) {
     return hash;
 }
 
-// Method to store message
+// Method to return message index
 uint32_t messageIndex(uint32_t hashedMessage) {
     uint32_t buffer1, buffer2, buffer3, buffer4, buffer5;
 
@@ -39,7 +42,19 @@ uint32_t messageIndex(uint32_t hashedMessage) {
     messageIndex = (messageIndex * 8) + buffer4; // shift bits 3 places and add buffer 4
     messageIndex = (messageIndex * 8) + (buffer1 + buffer3 + buffer5) ;  // shift bits 3 places and add random buffer
 
-    return messageIndex % 1000; // return index
+    return messageIndex % numberOfLinkedLists; // return index
+}
+
+// Method to store message in appropriate linked list
+void storeMessage(uint32_t hashedMessage) {
+    uint32_t index = messageIndex(hashedMessage);
+    storedValues[index].insertNode(hashedMessage);
+}
+
+// Method to validate if a message exists in linked list at specific index
+bool validateMessage(uint32_t hashedMessage) {
+    uint32_t index = messageIndex(hashedMessage);
+    return storedValues[index].searchNode(hashedMessage);
 }
 
 // Driver
@@ -60,15 +75,16 @@ int main() {
         string rawMessage; // user input
         uint32_t hashedMessage; // hashed
 
+        // Logic gates
         switch(choice) {
-            case 1: 
+            case 1: // Store values in liked lists
                 cout << "please enter passwords to store: "; // get user message
                 getline(cin, rawMessage);
 
                 hashedMessage = djb2(rawMessage); // convert raw message to hashed
                 index = messageIndex(hashedMessage); // generate index for hashed message
 
-                storedValues[index] = hashedMessage; // store hash message at index
+                storeMessage(hashedMessage); // store hash message at index
 
                 // Display some usefull info
                 cout << "#####################################";
@@ -78,14 +94,14 @@ int main() {
                 cout << "\n#####################################\n\n";
 
                 break;
-            case 2: 
+            case 2: // Validate already stores values
                 cout << "please password message to validate: ";
                 getline(cin, rawMessage);
 
                 hashedMessage = djb2(rawMessage); // get hash of raw message
                 index = messageIndex(hashedMessage); // get index of hash
 
-                if(storedValues[index] == hashedMessage) {
+                if(validateMessage(hashedMessage)) {
 
                     cout << "\n#####################################\n";
                     cout << "Password is valid!" <<
@@ -101,7 +117,7 @@ int main() {
             
                 break;
 
-            case 3: 
+            case 3: // Exit 
                 flag = false;
                 break;
 

@@ -13,6 +13,7 @@ class linkedList{
             
         }
 
+        // Insert node
         void insertNode(int data){
             Node* newNode = new Node(data);
             if(head == NULL){
@@ -27,6 +28,7 @@ class linkedList{
             temp->next = newNode;
         };
         
+        // print list
         void printList(){
             Node* temp = head;
             while (temp != NULL){
@@ -36,6 +38,7 @@ class linkedList{
             cout << endl;
         }
         
+        // Delete key
         void deleteNode(int key) {
             if (head == NULL) { //nothing to delete
                 return;
@@ -58,6 +61,17 @@ class linkedList{
             temp->next = temp->next->next; //to link the list before deleting the node
             delete nodeToDelete;
         }
-        
+
+        // Search for key
+        bool searchNode(uint32_t key) {
+        Node* temp = head;
+        while (temp != nullptr) {
+                if (temp->data == key) {
+                    return true;
+                }
+                temp = temp->next;
+            }
+            return false;
+        }    
 
 };
